@@ -1,0 +1,48 @@
+version: '2'
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - discovery.type=single-node
+    volumes:
+      - ~/docker/volumes/elastic/data:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+    ports:
+      - 9200:9200
+      - 9300:9300
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.2
+    container_name: kibana
+    networks:
+      - elastic
+    ports:
+      - 9400:9400
+      - 5601:5601
+    depends_on:
+      - elastic
+  fscrawler-arsredovisningar:
+    image: nilsx/docker-fscrawler:latest
+    container_name: fscrawler-arsredovisningar
+    networks:
+      - elastic
+    volumes:
+      - ~/docker/volumes/fscrawler/config/arsredovisningar:/root/.fscrawler/project:ro
+      - ~/docker/volumes/fscrawler/data/arsredovisningar:/runtime/data:ro
+    depends_on:
+      - elastic
+  fscrawler-regleringsbrev:
+    image: nilsx/docker-fscrawler:latest
+    container_name: fscrawler-regleringsbrev
+    networks:
+      - elastic
+    volumes:
+      - ~/docker/volumes/fscrawler/config/regleringsbrev:/root/.fscrawler/project:ro
+      - ~/docker/volumes/fscrawler/data/regleringsbrev:/runtime/data:ro
+    depends_on:
+      - elastic
+networks:
+  elastic:
+    driver: bridge
