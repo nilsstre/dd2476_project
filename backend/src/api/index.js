@@ -10,23 +10,20 @@ const client = new Client({
   node: elasticURL
 })
 
-routs.get('/search/:index/:query', async (request, response) => {
-  const requestBody = esb.requestBodySearch().query(esb.matchQuery('_id', '2006_Alkoholsortimentsnämnden.pdf'))
-  console.log(requestBody.toJSON())
-  //const { index, query } = request.params
+routs.get('/search/:index/:field/:query', async (request, response) => {
+  const { index, query, field } = request.params
+
+  const requestBody = esb
+    .requestBodySearch()
+    .query(esb.matchQuery(field, query))
+
   return client
     .search({
-      index: 'regleringsbrev',
-      type: '_doc',
+      index,
       body: requestBody.toJSON()
     })
-    .then((result) => {
-      const {
-        hits: { hits }
-      } = result
-      console.log('hits', hits)
-      return response.status(200).send({ hits })
-    })
+    .then((result) => response.status(200).send({ result })
+    )
     .catch((error) => response.status(500).send({ error }))
 })
 
