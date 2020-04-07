@@ -21,6 +21,7 @@ fs:
     enabled: true
     pdf_strategy: "ocr_and_text"
   follow_symlinks: false
+  indexed_chars: "-1"
 elasticsearch:
   nodes:
   - url: "http://elasticsearch:9200"
