@@ -4,11 +4,12 @@
   "description": "Backend for search search engine",
   "main": "src/index.js",
   "scripts": {
+    "dev": "env-cmd -f .env-local node",
     "start": "env-cmd -f .env-local nodemon src/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git@gits-15.sys.kth.se:nilsstre/dd2476-project.git"
+    "url": "git@github.com:nilsstre/dd2476_project.git"
   },
   "author": "Emelie Sundström, Nils Streijffert, Sven Anderzén",
   "license": "MIT",
@@ -19,9 +20,10 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.6.1",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "elastic-builder": "^2.6.0",
     "express": "^4.17.1",
-    "request": "^2.88.2"
+    "luxon": "^1.23.0"
   }
 }
