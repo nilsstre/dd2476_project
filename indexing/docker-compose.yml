@@ -29,7 +29,7 @@ services:
     networks:
       - elastic
     volumes:
-      - ~/docker/volumes/fscrawler/config/arsredovisningar:/root/.fscrawler/project:ro
+      - /Users/nils/github/private/dd2476_project/indexing/config/arsredovisningar:/root/.fscrawler/project:ro
       - ~/docker/volumes/fscrawler/data/arsredovisningar:/runtime/data:ro
     depends_on:
       - elastic
@@ -39,7 +39,7 @@ services:
     networks:
       - elastic
     volumes:
-      - ~/docker/volumes/fscrawler/config/regleringsbrev:/root/.fscrawler/project:ro
+      - /Users/nils/github/private/dd2476_project/indexing/config/regleringsbrev:/root/.fscrawler/project:ro
       - ~/docker/volumes/fscrawler/data/regleringsbrev:/runtime/data:ro
     depends_on:
       - elastic

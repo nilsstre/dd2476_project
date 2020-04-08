@@ -1,9 +1,9 @@
 name: "regleringsbrev"
 fs:
   url: "/runtime/data/"
-  update_rate: "15m"
+  update_rate: "10m"
   excludes:
-  - "*/~*"
+    - "*/.DS_Store"
   json_support: false
   filename_as_id: true
   add_filesize: true
@@ -14,7 +14,7 @@ fs:
   attributes_support: false
   raw_metadata: false
   xml_support: false
-  index_folders: true
+  index_folders: false
   lang_detect: false
   continue_on_error: false
   ocr:
@@ -24,7 +24,7 @@ fs:
   indexed_chars: "-1"
 elasticsearch:
   nodes:
-  - url: "http://elasticsearch:9200"
+    - url: "http://elasticsearch:9200"
   bulk_size: 100
   flush_interval: "5s"
   byte_size: "10mb"
