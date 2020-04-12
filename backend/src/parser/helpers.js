@@ -16,13 +16,14 @@ const getOrganisationNumber = (fileName) => {
   if (fileName.includes('_NULL')) {
     return '_missing_'
   } else {
-    const number = fileName.replace(new RegExp('\\d+_(\\S+| )+_'), '').replace('.pdf', '')
-    return number.substr(0,6) + '-' + number.substr(6)
+    const number = fileName
+      .replace(new RegExp('\\d+_(\\S+| )+_'), '')
+      .replace('.pdf', '')
+    return number.substr(0, 6) + '-' + number.substr(6)
   }
 }
 
-const groupAgencies = (files) => {
-
+const groupAgenciesHelper = (files) => {
   const agencyNames = [
     ...new Set(
       files
@@ -31,10 +32,11 @@ const groupAgencies = (files) => {
     )
   ]
 
-  const agencyObjectsEmpty = agencyNames.reduce(
-    (obj, name) => ({ ...obj, [name]: [] }),
-    {}
-  )
+  return agencyNames.reduce((obj, name) => ({ ...obj, [name]: [] }), {})
+}
+
+const groupAgencies = (files) => {
+  const agencyObjectsEmpty = groupAgenciesHelper(files)
 
   const agencyObjects = files
     .filter((file) => '.DS_Store' !== file)
@@ -61,9 +63,35 @@ const groupAgencies = (files) => {
     .reduce((array, innerArray) => [...array, ...innerArray], [])
 }
 
+const groupAgenciesForFile = (files) => {
+  const agencyObjectsEmpty = groupAgenciesHelper(files)
+
+  return files
+    .filter((file) => '.DS_Store' !== file)
+    .reduce((obj, file) => {
+      const agencyName = getAgencyName(file)
+      if (obj[agencyName]) {
+        if (obj[agencyName].name) {
+          obj[agencyName].date = [...obj[agencyName].date, getDate(file)]
+        } else {
+          obj[agencyName] = {
+            name: agencyName,
+            date: [getDate(file)],
+            oganisationNumber: getOrganisationNumber(file)
+          }
+        }
+        return obj
+      } else {
+        console.error('Agency not found:', agencyName)
+      }
+      return obj
+    }, agencyObjectsEmpty)
+}
+
 module.exports = {
   getAgencyName,
   getDate,
   groupAgencies,
-  getOrganisationNumber
+  getOrganisationNumber,
+  groupAgenciesForFile
 }

@@ -7,7 +7,7 @@ const createClient = () => {
     {},
     (error) => {
       if (error) {
-        console.error('Cannot connect to Elasticsearch.', error)
+        console.error('Cannot connect to Elasticsearch.', JSON.stringify(error, null, 2))
       } else {
         console.log('Connected to Elasticsearch.')
       }

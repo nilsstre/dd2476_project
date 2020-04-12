@@ -2,22 +2,7 @@ const express = require('express')
 const routs = express.Router()
 const esb = require('elastic-builder')
 const { client } = require('../elastic/handler')
-
-routs.get('/search/:index/:field/:query', async (request, response) => {
-  const { index, query, field } = request.params
-
-  const requestBody = esb
-    .requestBodySearch()
-    .query(esb.matchQuery(field, query))
-
-  return client
-    .search({
-      index,
-      body: requestBody.toJSON()
-    })
-    .then((result) => response.status(200).send({ result }))
-    .catch((error) => response.status(500).send({ error }))
-})
+const { makeQuery } = require('../elastic/search')
 
 routs.get('/health', (_, response) =>
   client.cluster
@@ -42,5 +27,14 @@ routs.get('/ping', (_, response) =>
         .send({ message: 'Failed to ping Elastic', error })
     })
 )
+
+routs.post('/search', (request, response) => {
+  return makeQuery({ query: request.body, client })
+    .then((result) => response.status(200).send({ data: result }))
+    .catch((error) => {
+      console.error(JSON.stringify(error, null, 2))
+      return response.status(500).send()
+    })
+})
 
 module.exports = routs

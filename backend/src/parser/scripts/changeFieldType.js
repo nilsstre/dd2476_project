@@ -25,5 +25,5 @@ changeFieldType({
       type: 'date'
     }
   },
-  index: ['arsredovisningar', 'regleringsbrev']
+  index: ['arsredovisningar']
 })
