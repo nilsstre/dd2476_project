@@ -10,6 +10,4 @@ COPY . .
 
 ENV ELASTIC_URL 'http://elasticsearch:9200'
 
-EXPOSE 8080
-
 CMD ["npm", "run", "prod"]
