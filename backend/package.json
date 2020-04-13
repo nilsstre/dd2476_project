@@ -4,9 +4,8 @@
   "description": "Backend for search search engine",
   "main": "src/index.js",
   "scripts": {
-    "dev": "env-cmd -f .env-local node",
     "start": "env-cmd -f .env-local nodemon src/index.js",
-    "prod": "env-cmd -f .env-prod nodemon src/index.js"
+    "prod": "node src/index.js"
   },
   "repository": {
     "type": "git",
