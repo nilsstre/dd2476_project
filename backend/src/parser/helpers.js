@@ -49,7 +49,7 @@ const groupAgencies = (files) => {
             id: file,
             agency: agencyName,
             date: getDate(file),
-            oganisationNumber: getOrganisationNumber(file)
+            organisationNumber: getOrganisationNumber(file)
           }
         ]
       } else {
