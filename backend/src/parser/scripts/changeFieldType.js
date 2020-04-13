@@ -18,7 +18,7 @@ changeFieldType({
     agency: {
       type: 'keyword'
     },
-    oganisationNumber: {
+    organisationNumber: {
       type: 'keyword'
     },
     createdAt: {
