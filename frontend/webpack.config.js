@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
 
@@ -42,7 +43,10 @@ module.exports = (env) => {
           NODE_ENV: JSON.stringify(env.nodeEnv || 'production'),
           COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH)
         }
-      })
+      }),
+      new CopyWebpackPlugin([
+        { from: 'static' },
+      ])
     ],
     optimization: {
       splitChunks: {
