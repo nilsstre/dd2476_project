@@ -36,7 +36,6 @@ files using FScrawler.
 2. Start disposable docker containers for indexing by running the following
    commands from the project root:
 
-   - For "årsredovisningar":
 ```
 docker run --rm \
            --interactive \
@@ -47,7 +46,6 @@ docker run --rm \
            nilsx/docker-fscrawler:latest
 ```
 
-   - For "regleringsbrev":
 ```
 docker run --rm \
            --interactive \
