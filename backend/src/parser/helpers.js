@@ -39,7 +39,7 @@ const groupAgencies = (files) => {
   const agencyObjectsEmpty = groupAgenciesHelper(files)
 
   const agencyObjects = files
-    .filter((file) => '.DS_Store' !== file)
+    .filter((file) => ('.DS_Store' !== file) && ('.gitkeep' !== file))
     .reduce((obj, file) => {
       const agencyName = getAgencyName(file)
       if (obj[agencyName]) {
@@ -77,7 +77,7 @@ const groupAgenciesForFile = (files) => {
           obj[agencyName] = {
             name: agencyName,
             date: [getDate(file)],
-            oganisationNumber: getOrganisationNumber(file)
+            organisationNumber: getOrganisationNumber(file)
           }
         }
         return obj

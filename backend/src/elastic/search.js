@@ -44,7 +44,7 @@ const transformResult = (result) =>
       score: match._score,
       createdAt: match._source.createdAt,
       agency: match._source.agency,
-      organisationNumber: match._source.oganisationNumber
+      organisationNumber: match._source.organisationNumber
     }
   })
 
