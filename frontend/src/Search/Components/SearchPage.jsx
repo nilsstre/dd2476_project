@@ -24,8 +24,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     height: '80vh'
-  },
-  textAnimation: {}
+  }
 }))
 
 const SearchPage = ({
@@ -35,12 +34,13 @@ const SearchPage = ({
   years,
   loadingFieldData,
   search,
-  getFieldData
+  getFieldData,
+  setupFailed
 }) => {
   const classes = useStyles
   const [state, setState] = useState({
     elasticConnected: false,
-    snackbarOpen: false,
+    snackbarOpen: false
   })
 
   useEffect(() => {
@@ -50,7 +50,10 @@ const SearchPage = ({
     )
   }, [])
 
-  const handleOpen = () => setState({ ...state, snackbarOpen: true })
+  useEffect(() => {
+    const  interval = setInterval(() => setupFailed && getFieldData(), 3000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleClose = () => setState({ ...state, snackbarOpen: false })
 
@@ -70,9 +73,19 @@ const SearchPage = ({
             years={years}
           />
           <SearchTable result={result} loading={loading} />
-          <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} autoHideDuration={6000} onClose={handleClose} open={state.snackbarOpen} >
-            <Alert onClose={handleClose} severity={state.elasticConnected ? 'success' : 'error'}>
-              {state.elasticConnected ? 'Connected to Elastic' : 'Failed to connect to Elastic'}
+          <Snackbar
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            open={state.snackbarOpen}
+          >
+            <Alert
+              onClose={handleClose}
+              severity={state.elasticConnected ? 'success' : 'error'}
+            >
+              {state.elasticConnected
+                ? 'Connected to Elastic'
+                : 'Failed to connect to Elastic'}
             </Alert>
           </Snackbar>
         </LoadingOverlay>
@@ -87,7 +100,8 @@ export default connect(
     loading: state.search.get('loading'),
     loadingFieldData: state.search.get('loadingFieldData'),
     years: state.search.get('years'),
-    agencyOrganisationNumber: state.search.get('agencyOrganisationNumber')
+    agencyOrganisationNumber: state.search.get('agencyOrganisationNumber'),
+    setupFailed: state.search.get('setupFailed')
   }),
   { search, getFieldData }
 )(SearchPage)
