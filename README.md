@@ -41,7 +41,7 @@ docker run --rm \
            --interactive \
            --tty \
            --network elasticsearch \
-           --volume $(pwd)/indexing/config/arsredovisningar:/root/.fscrawler/project:ro \
+           --volume $(pwd)/indexing/local-fscrawler-config/arsredovisningar:/root/.fscrawler/project:ro \
            --volume $(pwd)/pdf/arsredovisningar:/runtime/data:ro \
            nilsx/docker-fscrawler:latest bin/fscrawler project --loop 1
 ```
@@ -51,7 +51,7 @@ docker run --rm \
            --interactive \
            --tty \
            --network elasticsearch \
-           --volume $(pwd)/indexing/config/regleringsbrev:/root/.fscrawler/project:ro \
+           --volume $(pwd)/indexing/local-fscrawler-config/regleringsbrev:/root/.fscrawler/project:ro \
            --volume $(pwd)/pdf/regleringsbrev:/runtime/data:ro \
            nilsx/docker-fscrawler:latest bin/fscrawler project --loop 1
 ```

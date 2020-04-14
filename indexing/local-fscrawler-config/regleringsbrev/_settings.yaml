@@ -1,0 +1,14 @@
+name: "regleringsbrev"
+fs:
+  url: "/runtime/data"
+  includes:
+    - "*.pdf"
+  add_filesize: true
+  store_source: true
+  index_folders: false
+elasticsearch:
+  nodes:
+    - url: "http://elasticsearch:9200"
+  bulk_size: 100
+  flush_interval: "5s"
+  byte_size: "10mb"
