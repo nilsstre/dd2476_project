@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 Procfile
 README.md
+.prettierc
