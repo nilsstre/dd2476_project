@@ -7,20 +7,35 @@ import Paper from '@material-ui/core/Paper'
 import SearchTable from '../../general/components/SearchTable.jsx'
 import LoadingOverlay from 'react-loading-overlay'
 import BounceLoader from 'react-spinners/BounceLoader'
+import Typography from '@material-ui/core/Typography'
+import { keyframes } from '@emotion/core'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    height: '90vh',
+    margin: 0,
+    padding: 0
   },
   paper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    height: '100vh'
+    height: '80vh'
+  },
+  textAnimation: {
+
   }
 }))
 
-const SearchPage = ({ result, loading, agencyOrganisationNumber, years, loadingFieldData, search, getFieldData }) => {
+const SearchPage = ({
+  result,
+  loading,
+  agencyOrganisationNumber,
+  years,
+  loadingFieldData,
+  search,
+  getFieldData
+}) => {
   const classes = useStyles
 
   useEffect(() => {
@@ -28,12 +43,24 @@ const SearchPage = ({ result, loading, agencyOrganisationNumber, years, loadingF
   }, [])
 
   return (
-    <Paper className={classes.paper}>
-      <LoadingOverlay active={loadingFieldData} spinner={<BounceLoader active={loadingFieldData} />} >
-        <SearchForm onSubmit={search} agencyOrganisationNumber={agencyOrganisationNumber} years={years} />
-        <SearchTable result={result} loading={loading} />
-      </LoadingOverlay>
-    </Paper>
+    <div className={classes.root} >
+      <Paper className={classes.paper}>
+        <Typography component="h1" variant='h2' style={{ paddingLeft: '2px'}}>
+          DD2476 Swedish Democracy Search
+        </Typography>
+        <LoadingOverlay
+          active={loadingFieldData}
+          spinner={<BounceLoader active={loadingFieldData} />}
+        >
+          <SearchForm
+            onSubmit={search}
+            agencyOrganisationNumber={agencyOrganisationNumber}
+            years={years}
+          />
+          <SearchTable result={result} loading={loading} />
+        </LoadingOverlay>
+      </Paper>
+    </div>
   )
 }
 
