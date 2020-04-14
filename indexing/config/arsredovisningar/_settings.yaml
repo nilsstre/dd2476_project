@@ -3,7 +3,8 @@ fs:
   url: "/runtime/data/"
   update_rate: "10m"
   excludes:
-  - "*/DS_Store"
+    - "*/DS_Store"
+    - ".gitkeep"
   json_support: false
   filename_as_id: true
   add_filesize: true
