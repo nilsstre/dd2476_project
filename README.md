@@ -43,7 +43,7 @@ docker run --rm \
            --network elasticsearch \
            --volume $(pwd)/indexing/config/arsredovisningar:/root/.fscrawler/project:ro \
            --volume $(pwd)/pdf/arsredovisningar:/runtime/data:ro \
-           nilsx/docker-fscrawler:latest
+           nilsx/docker-fscrawler:latest bin/fscrawler project --loop 1
 ```
 
 ```
@@ -53,7 +53,7 @@ docker run --rm \
            --network elasticsearch \
            --volume $(pwd)/indexing/config/regleringsbrev:/root/.fscrawler/project:ro \
            --volume $(pwd)/pdf/regleringsbrev:/runtime/data:ro \
-           nilsx/docker-fscrawler:latest
+           nilsx/docker-fscrawler:latest bin/fscrawler project --loop 1
 ```
 
 3. The files should now have been indexed by the Elasticsearch. Open Kibana,
