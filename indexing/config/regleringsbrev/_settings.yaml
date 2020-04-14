@@ -24,7 +24,7 @@ fs:
   indexed_chars: "-1"
 elasticsearch:
   nodes:
-    - url: "http://elasticsearch:9200"
+    - url: "167.172.191.58:9200"
   bulk_size: 100
   flush_interval: "5s"
   byte_size: "10mb"
