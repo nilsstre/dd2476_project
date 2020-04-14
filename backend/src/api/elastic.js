@@ -1,6 +1,5 @@
 const express = require('express')
 const routs = express.Router()
-const esb = require('elastic-builder')
 const { client } = require('../elastic/handler')
 const { makeQuery } = require('../elastic/search')
 
