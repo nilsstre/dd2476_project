@@ -5,10 +5,10 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
-import PreviewModal from './PreviewModal.jsx'
 import { DateTime } from 'luxon'
 import LoadingOverlay from 'react-loading-overlay'
 import ClipLoader from 'react-spinners/ClipLoader'
+import { getPathToPDF } from '../../general/helpers'
 
 const rowDescriptions = [
   'Agency',
@@ -35,15 +35,11 @@ const TableElement = ({ element, handleClick, keyValue }) => (
 )
 
 const SearchTable = ({ result, loading }) => {
-  const [isOpen, setOpen] = useState(false)
-  const [getSelectedElement, setSelectedElement] = useState()
 
   const handleClick = (element) => {
-    setOpen(true)
-    setSelectedElement(element)
+    const newWindow = window.open(getPathToPDF(element))
+    newWindow.focus()
   }
-
-  const handleClose = () => setOpen(false)
 
   return (
     <React.Fragment>
@@ -58,11 +54,6 @@ const SearchTable = ({ result, loading }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              <PreviewModal
-                open={isOpen}
-                element={getSelectedElement}
-                handleClose={handleClose}
-              />
               {result
                 ? result.map((element, key) => (
                   <TableElement

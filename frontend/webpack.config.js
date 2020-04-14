@@ -1,5 +1,4 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
 
@@ -32,22 +31,29 @@ module.exports = (env) => {
     },
     output: {
       path: path.resolve(__dirname, 'build'),
-      filename: 'main.js',
-      sourceMapFilename: 'main.js.map'
+      filename: isDevelopment ? 'main.js' : '[contenthash:8].main.js'
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.resolve('./public/index.html'),
+        template: path.resolve('./public/index.html')
       }),
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify(env.nodeEnv || 'production'),
           COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH)
         }
-      }),
+      })
     ],
     optimization: {
-      namedModules: true
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendor",
+            chunks: "initial",
+          },
+        },
+      }
     },
     devServer: {
       port: 7000,

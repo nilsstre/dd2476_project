@@ -39,14 +39,14 @@ const renderAutoComplete = ({ options, label, placeholder, input, ...rest }) => 
   )
 }
 
-const SearchForm = ({ handleSubmit, submitting }) => {
+const SearchForm = ({ handleSubmit, submitting, agencyOrganisationNumber, years }) => {
   return (
     <form style={{ display: 'flex', margin: '2 2 2 2 em' }} onSubmit={handleSubmit}>
       <div style={{ display: 'flex', width: '100%', bottom: '2em'}}>
         <Field name='searchField' component={renderTextField} label='Free text search' />
-        <Field name='selectAgency' component={renderAutoComplete} options={getAgencies()} label='Select agencies' placeholder='Agencies' />
-        <Field name='selectOrganisationNumber' component={renderAutoComplete} options={getOrganisationNumbers()} label='Select organisation numbers' placeholder='Organisation number' />
-        <Field name='selectYear' component={renderAutoComplete} options={getYear()} label='Select year' placeholder='Year' />
+        <Field name='selectAgency' component={renderAutoComplete} options={getAgencies(agencyOrganisationNumber)} label='Select agencies' placeholder='Agencies' />
+        <Field name='selectOrganisationNumber' component={renderAutoComplete} options={getOrganisationNumbers(agencyOrganisationNumber)} label='Select organisation numbers' placeholder='Organisation number' />
+        <Field name='selectYear' component={renderAutoComplete} options={getYear(years)} label='Select year' placeholder='Year' />
         <Button type='submit' disabled={submitting} >
           <SearchIcon />
         </Button>

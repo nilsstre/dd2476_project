@@ -1,25 +1,27 @@
-export const getAgencies = () =>
-  [].map((obj) => obj.name.charAt(0).toUpperCase() + obj.name.slice(1)).sort()
+import config from 'config'
+import { List } from 'immutable'
+const S3_ADDRESS = config.S3_ADDRESS
 
-export const getOrganisationNumbers = () =>
-  []
-    .map((key) => data[key].oganisationNumber)
+export const getAgencies = (fieldData) =>
+  (fieldData || List())
+    .map(
+      (element) =>
+        element
+          .get('name')
+          .charAt(0)
+          .toUpperCase() + element.get('name').slice(1)
+    )
+    .sort()
+    .toJS()
+
+export const getOrganisationNumbers = (fieldData) =>
+  (fieldData || List())
+    .map((element) => element.get('organisationNumber'))
     .filter((organisationNumber) => '_missing_' !== organisationNumber)
     .sort()
+    .toJS()
 
-export const getYear = () => [
-  '2006',
-  '2007',
-  '2008',
-  '2009',
-  '2010',
-  '2011',
-  '2012',
-  '2013',
-  '2014',
-  '2015',
-  '2016',
-  '2017',
-  '2018',
-  '2019'
-]
+export const getYear = (years) => (years || List()).sort().toJS()
+
+export const getPathToPDF = (element) =>
+  element && `${S3_ADDRESS}${element.get('index')}/${element.get('id')}`

@@ -1,10 +1,12 @@
-import React from 'react'
-import SearchForm from './SearchForm.jsx'
-import { search } from '../actions'
+import React, { useEffect } from 'react'
+import SearchForm from '../../general/components/SearchForm.jsx'
+import { getFieldData, search } from '../actions'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
-import SearchTable from './SearchTable.jsx'
+import SearchTable from '../../general/components/SearchTable.jsx'
+import LoadingOverlay from 'react-loading-overlay'
+import BounceLoader from 'react-spinners/BounceLoader'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,13 +20,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const SearchPage = ({ result, loading, search }) => {
+const SearchPage = ({ result, loading, agencyOrganisationNumber, years, loadingFieldData, search, getFieldData }) => {
   const classes = useStyles
+
+  useEffect(() => {
+    getFieldData()
+  }, [])
 
   return (
     <Paper className={classes.paper}>
-      <SearchForm onSubmit={search} />
-      <SearchTable result={result} loading={loading} />
+      <LoadingOverlay active={loadingFieldData} spinner={<BounceLoader active={loadingFieldData} />} >
+        <SearchForm onSubmit={search} agencyOrganisationNumber={agencyOrganisationNumber} years={years} />
+        <SearchTable result={result} loading={loading} />
+      </LoadingOverlay>
     </Paper>
   )
 }
@@ -32,7 +40,10 @@ const SearchPage = ({ result, loading, search }) => {
 export default connect(
   (state) => ({
     result: state.search.get('result'),
-    loading: state.search.get('loading')
+    loading: state.search.get('loading'),
+    loadingFieldData: state.search.get('loadingFieldData'),
+    years: state.search.get('years'),
+    agencyOrganisationNumber: state.search.get('agencyOrganisationNumber')
   }),
-  { search }
+  { search, getFieldData }
 )(SearchPage)
