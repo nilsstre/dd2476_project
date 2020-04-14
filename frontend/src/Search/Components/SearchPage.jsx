@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import SearchForm from '../../general/components/SearchForm.jsx'
-import { getFieldData, search } from '../actions'
+import { getFieldData, pingElastic, search } from '../actions'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -8,7 +8,10 @@ import SearchTable from '../../general/components/SearchTable.jsx'
 import LoadingOverlay from 'react-loading-overlay'
 import BounceLoader from 'react-spinners/BounceLoader'
 import Typography from '@material-ui/core/Typography'
-import { keyframes } from '@emotion/core'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '@material-ui/lab/Alert'
+
+const { useState } = require('react')
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +25,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     height: '80vh'
   },
-  textAnimation: {
-
-  }
+  textAnimation: {}
 }))
 
 const SearchPage = ({
@@ -37,15 +38,26 @@ const SearchPage = ({
   getFieldData
 }) => {
   const classes = useStyles
+  const [state, setState] = useState({
+    elasticConnected: false,
+    snackbarOpen: false,
+  })
 
   useEffect(() => {
     getFieldData()
+    pingElastic().then((result) =>
+      setState({ elasticConnected: result, snackbarOpen: true })
+    )
   }, [])
 
+  const handleOpen = () => setState({ ...state, snackbarOpen: true })
+
+  const handleClose = () => setState({ ...state, snackbarOpen: false })
+
   return (
-    <div className={classes.root} >
+    <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Typography component="h1" variant='h2' style={{ paddingLeft: '2px'}}>
+        <Typography component='h1' variant='h2' style={{ paddingLeft: '2px' }}>
           DD2476 Swedish Democracy Search
         </Typography>
         <LoadingOverlay
@@ -58,6 +70,11 @@ const SearchPage = ({
             years={years}
           />
           <SearchTable result={result} loading={loading} />
+          <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} autoHideDuration={6000} onClose={handleClose} open={state.snackbarOpen} >
+            <Alert onClose={handleClose} severity={state.elasticConnected ? 'success' : 'error'}>
+              {state.elasticConnected ? 'Connected to Elastic' : 'Failed to connect to Elastic'}
+            </Alert>
+          </Snackbar>
         </LoadingOverlay>
       </Paper>
     </div>

@@ -47,3 +47,12 @@ export const getFieldData = () => (dispatch) => {
       return dispatch({ type: SETUP_FAILURE })
     })
 }
+
+export const pingElastic = () =>
+  axios
+    .get(`${URL}/api/elastic/ping`)
+    .then((result) => result.data)
+    .catch((error) => {
+      console.error(error)
+      return false
+    })

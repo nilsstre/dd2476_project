@@ -25,6 +25,7 @@
   "scripts": {
     "dev-server": "webpack-dev-server --hot --config webpack.config.js --env.nodeEnv development",
     "local": "npm run dev-server -- --env.config local",
+    "build-stats": "webpack -p --json > stats.json --config webpack.config.js",
     "build": "webpack -p --config webpack.config.js",
     "build-prod": "npm run build -- --env.config prod"
   },
