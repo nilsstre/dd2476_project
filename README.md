@@ -30,13 +30,13 @@ After you've started Elasticsearch and Kibana you will need to index the PDF
 files using FScrawler.
 
 1. Place the PDF files in the folders:
-  - `.pdf/regleringsbrev/`
-  - `.pdf/arsredovisningar/`
+   - `.pdf/regleringsbrev/`
+   - `.pdf/arsredovisningar/`
 
 2. Start disposable docker containers for indexing by running the following
    commands from the project root:
 
-  1. For "årsredovisningar":
+   - For "årsredovisningar":
 ```
 docker run --rm \
            --interactive \
@@ -47,7 +47,7 @@ docker run --rm \
            nilsx/docker-fscrawler:latest
 ```
 
-  2. For "regleringsbrev":
+   - For "regleringsbrev":
 ```
 docker run --rm \
            --interactive \
