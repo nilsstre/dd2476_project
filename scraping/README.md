@@ -44,6 +44,7 @@ python3 scrape.py --cache ./cache --output ./output --logging --year 2020
    - `objective`: The HTML content of the section "Uppdrag" in the
      appropriation direction.
    - `agency`: The name of the governmental agency or enterprise.
+   - `agency_id`: The ESV ID of the agency.
    - `year`: The year that the appropriation direction concerns.
    - `source_url`: The URL of the original document.
    - `organization_number`: The organization number for the agency.

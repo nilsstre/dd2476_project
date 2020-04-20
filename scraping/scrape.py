@@ -46,20 +46,21 @@ def main(args):
     # Scrape the appropriation direction URL:s and agency name from the
     # governmental ledger:
     app_dir_urls = scrape_ledger(ledger_html)
-    rbids = []
+    app_dirs_data = []
 
     # Fetch each appropriation direction:
     for (url_path, agency_name) in app_dir_urls.items():
         url = f"{BASE_URL}{url_path}"
-        rbid = re.findall("RBID=(\d+)", url_path)[0]
-        content = url_cache.get(f"RBID-{rbid}-{args.year}", url)
+        agency_id = re.findall("myndighetId=(\d+)", url_path)[0]
+        content = url_cache.get(f"AGENCY_ID-{agency_id}-{args.year}", url)
 
-        rbids.append((agency_name, content, url, rbid))
+        app_dirs_data.append((agency_name, agency_id, url, content))
 
     # Scrape each appropriation direction and add metadata:
-    for (agency_name, content, url, rbid) in rbids:
+    for (agency_name, agency_id, url, content) in app_dirs_data:
         app_dir_data = scrape_app_dir(content)
         app_dir_data['agency'] = agency_name
+        app_dir_data['agency_id'] = agency_id
         app_dir_data['year'] = args.year
         app_dir_data['source_url'] = url
         app_dir_data['organization_number'] = AGENCY_ORG_NUMBER.get(agency_name.upper(), "")
@@ -67,7 +68,7 @@ def main(args):
         if agency_name.upper() not in AGENCY_ORG_NUMBER:
             logging.warning(f"Could not find organization number for {agency_name}")
 
-        save_json(args.output, f"RBID-{rbid}-{args.year}.json", app_dir_data)
+        save_json(args.output, f"AGENCY_ID-{agency_id}-{args.year}.json", app_dir_data)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=
