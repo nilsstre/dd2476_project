@@ -21,7 +21,7 @@ def scrape_ledger(ledger_html):
     app_dir_urls = {}
 
     for item in soup.find(id='Myndigheter').find_all('a'):
-        app_dir_urls[item.get('href')] = item.string
+        app_dir_urls[item.get('href')] = item.string.strip()
 
     return app_dir_urls
 
