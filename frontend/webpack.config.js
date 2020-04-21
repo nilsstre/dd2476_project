@@ -54,9 +54,9 @@ module.exports = (env) => {
           commons: {
             test: /[\\/]node_modules[\\/]/,
             name: "vendor",
-            chunks: "initial",
-          },
-        },
+            chunks: "all",
+          }
+        }
       }
     },
     devServer: {

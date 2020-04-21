@@ -7,7 +7,7 @@ const PATH_TO_DATA = process.env.PATH_TO_DATA
 const addToArsredovisningIndex = () => {
   fs.readdir(`${PATH_TO_DATA}/arsredovisningar/`, (error, files) => {
     if (error) {
-      console.error(error)
+      console.error('error', error)
     } else {
       const agenciesArray = helpers.groupAgencies(files)
       Promise.each(

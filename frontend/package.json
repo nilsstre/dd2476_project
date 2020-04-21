@@ -10,6 +10,7 @@
     "axios": "^0.19.2",
     "immutable": "^4.0.0-rc.12",
     "luxon": "^1.23.0",
+    "notistack": "^0.9.11",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-loading-overlay": "^1.0.1",

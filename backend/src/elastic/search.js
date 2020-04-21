@@ -2,22 +2,29 @@ const { DateTime } = require('luxon')
 const R = require('ramda')
 
 const getQuery = (query) => {
-  const { textQuery, agencies, organisationNumbers, years } = query
+  const { textQuery, textField, agencies, organisationNumbers, years } = query
   let newQuery = []
 
-  if (textQuery) {
-    newQuery = [...newQuery, { match: { content: textQuery } }]
+  if (textField === 'goals_and_reporting' || textField === 'both') {
+    newQuery = [...newQuery, { match: { goals_and_reporting: textQuery } }]
+  }
+
+  if (textField === 'objective' || textField === 'both') {
+    newQuery = [...newQuery, { match: { objective: textQuery } }]
   }
 
   if (agencies) {
-    newQuery = [...newQuery, agencies.map((agency) => ({ match: { agency } }))]
+    newQuery = [
+      ...newQuery,
+      agencies.map((agency) => ({ match: { agency: agency } }))
+    ]
   }
 
   if (organisationNumbers) {
     newQuery = [
       ...newQuery,
       organisationNumbers.map((organisationNumber) => ({
-        match: { organisationNumber }
+        match: { organization_number: organisationNumber }
       }))
     ]
   }
@@ -27,7 +34,7 @@ const getQuery = (query) => {
       ...newQuery,
       years.map((year) => ({
         match: {
-          createdAt: DateTime.fromObject({ year }).toISO()
+          year: DateTime.fromObject({ year }).toISO()
         }
       }))
     ]
@@ -39,26 +46,31 @@ const getQuery = (query) => {
 const transformResult = (result) =>
   result.body.hits.hits.map((match) => {
     return {
-      index: match._index,
-      id: match._id,
-      score: match._score,
-      createdAt: match._source.createdAt,
       agency: match._source.agency,
-      organisationNumber: match._source.organisationNumber
+      agencyId: match._source.agency_id,
+      goalsAndReporting: match._source.goals_and_reporting,
+      id: match._id,
+      index: match._index,
+      objective: match._source.objective,
+      organisationNumber: match._source.organization_number,
+      score: match._score,
+      sourceUrl: match._source.source_url,
+      year: match._source.year
     }
   })
 
 const makeQuery = ({ query, client }) =>
   client
     .search({
-      index: ['regleringsbrev', 'arsredovisningar'],
+      index: ['regleringsbrev'],
       body: {
         query: {
           bool: {
             should: getQuery(query)
           }
         }
-      }
+      },
+      size: 20
     })
     .then((result) => transformResult(result))
     .catch((error) => error)

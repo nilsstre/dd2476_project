@@ -7,19 +7,23 @@ export const SEARCH_LOADING = 'SEARCH_LOADING'
 export const SEARCH_FAILURE = 'SEARCH_FAILURE'
 export const SEARCH_SUCCESS = 'SEARCH_SUCCESS'
 
+export const FORM_CHANGED = 'FORM_CHANGED'
+
 export const search = (values) => (dispatch) => {
   const {
-    searchField,
     selectAgency,
+    searchField,
     selectOrganisationNumber,
+    selectTextField,
     selectYear
   } = values
   dispatch({ type: SEARCH_LOADING })
   return axios
     .post(`${URL}/api/elastic/search`, {
-      textQuery: searchField,
       agencies: selectAgency,
-      organisationNumbers: selectOrganisationNumber,
+      organization_numbers: selectOrganisationNumber,
+      textField: selectTextField,
+      textQuery: searchField,
       years: selectYear
     })
     .then((response) =>

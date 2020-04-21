@@ -2,6 +2,7 @@ const express = require('express')
 const routs = express.Router()
 const { client } = require('../elastic/handler')
 const { makeQuery } = require('../elastic/search')
+const { mockResponse } = require('../parser/helpers')
 
 routs.get('/health', (_, response) =>
   client.cluster
@@ -35,5 +36,13 @@ routs.post('/search', (request, response) => {
       return response.status(500).send()
     })
 })
+
+routs.post('/mock', (_, response) =>
+  response
+    .status(200)
+    .send({
+      data: mockResponse()
+    })
+)
 
 module.exports = routs

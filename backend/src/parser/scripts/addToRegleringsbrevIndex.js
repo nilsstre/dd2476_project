@@ -12,6 +12,7 @@ const addToRegleringsbrev = () => {
         console.error(error)
       } else {
         const agenciesArray = helpers.groupAgencies(files)
+        console.log(agenciesArray)
         Promise.each(
           agenciesArray,
           (agency) => handleIndices.updateRegleringsbrev(agency),

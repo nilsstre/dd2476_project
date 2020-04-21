@@ -1,19 +1,23 @@
 import React, { useEffect } from 'react'
-import SearchForm from '../../general/components/SearchForm.jsx'
+import SearchForm from './SearchForm.jsx'
 import { getFieldData, pingElastic, search } from '../actions'
-import { connect } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
-import SearchTable from '../../general/components/SearchTable.jsx'
+import SearchTable from './SearchTable.jsx'
 import LoadingOverlay from 'react-loading-overlay'
 import BounceLoader from 'react-spinners/BounceLoader'
 import Typography from '@material-ui/core/Typography'
-import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '@material-ui/lab/Alert'
+import { useSnackbar } from 'notistack'
+import {
+  useGetLoading,
+  useGetLoadingFieldData,
+  useGetSetupFailed
+} from '../../hooks'
+import { SNACKBAR_TYPES, snackbarHandler } from '../../general/snackbarHandler'
+import * as actions from '../actions'
 
-const { useState } = require('react')
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     height: '90vh',
     margin: 0,
@@ -27,35 +31,51 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const SearchPage = ({
-  result,
-  loading,
-  agencyOrganisationNumber,
-  years,
-  loadingFieldData,
-  search,
-  getFieldData,
-  setupFailed
-}) => {
+const handleSetup = ({ result, enqueueSnackbar }) => {
+  if (result.type === actions.SETUP_FAILURE) {
+    snackbarHandler({
+      type: SNACKBAR_TYPES.SETUP_FAILURE,
+      enqueueSnackbar
+    })
+  }
+}
+
+const SearchPage = () => {
   const classes = useStyles
-  const [state, setState] = useState({
-    elasticConnected: false,
-    snackbarOpen: false
-  })
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const dispatch = useDispatch()
+
+  const loading = useGetLoading()
+  const loadingFieldData = useGetLoadingFieldData()
+  const setupFailed = useGetSetupFailed()
 
   useEffect(() => {
-    getFieldData()
-    pingElastic().then((result) =>
-      setState({ elasticConnected: result, snackbarOpen: true })
+    dispatch(getFieldData()).then((result) =>
+      handleSetup({ result, enqueueSnackbar })
     )
+    pingElastic().then((result) => {
+      snackbarHandler({
+        type: result
+          ? SNACKBAR_TYPES.ELASTIC_CONNECTION_SUCCESS
+          : SNACKBAR_TYPES.ELASTIC_FAILURE,
+        enqueueSnackbar
+      })
+    })
   }, [])
 
   useEffect(() => {
-    const  interval = setInterval(() => setupFailed && getFieldData(), 3000)
+    const interval = setInterval(
+      () =>
+        setupFailed &&
+        dispatch(getFieldData()).then((result) =>
+          handleSetup({ result, enqueueSnackbar })
+        ),
+      3000
+    )
     return () => clearInterval(interval)
   }, [])
-
-  const handleClose = () => setState({ ...state, snackbarOpen: false })
 
   return (
     <div className={classes.root}>
@@ -67,41 +87,12 @@ const SearchPage = ({
           active={loadingFieldData}
           spinner={<BounceLoader active={loadingFieldData} />}
         >
-          <SearchForm
-            onSubmit={search}
-            agencyOrganisationNumber={agencyOrganisationNumber}
-            years={years}
-          />
-          <SearchTable result={result} loading={loading} />
-          <Snackbar
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            autoHideDuration={6000}
-            onClose={handleClose}
-            open={state.snackbarOpen}
-          >
-            <Alert
-              onClose={handleClose}
-              severity={state.elasticConnected ? 'success' : 'error'}
-            >
-              {state.elasticConnected
-                ? 'Connected to Elastic'
-                : 'Failed to connect to Elastic'}
-            </Alert>
-          </Snackbar>
+          <SearchForm onSubmit={(result) => dispatch(search(result))} />
+          <SearchTable loading={loading} />
         </LoadingOverlay>
       </Paper>
     </div>
   )
 }
 
-export default connect(
-  (state) => ({
-    result: state.search.get('result'),
-    loading: state.search.get('loading'),
-    loadingFieldData: state.search.get('loadingFieldData'),
-    years: state.search.get('years'),
-    agencyOrganisationNumber: state.search.get('agencyOrganisationNumber'),
-    setupFailed: state.search.get('setupFailed')
-  }),
-  { search, getFieldData }
-)(SearchPage)
+export default SearchPage
