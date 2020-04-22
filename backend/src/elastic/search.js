@@ -1,4 +1,3 @@
-const { DateTime } = require('luxon')
 const R = require('ramda')
 
 const getFieldQuery = ({ field, queryType = 'match', query, boost = 1.0 }) => ({
