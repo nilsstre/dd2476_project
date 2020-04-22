@@ -5,11 +5,14 @@ const getQuery = (query) => {
   const { textQuery, textField, agencies, organisationNumbers, years } = query
   let newQuery = []
 
-  if (textField === 'goals_and_reporting' || textField === 'both') {
+  if (
+    textQuery &&
+    (textField === 'goals_and_reporting' || textField === 'both')
+  ) {
     newQuery = [...newQuery, { match: { goals_and_reporting: textQuery } }]
   }
 
-  if (textField === 'objective' || textField === 'both') {
+  if (textQuery && (textField === 'objective' || textField === 'both')) {
     newQuery = [...newQuery, { match: { objective: textQuery } }]
   }
 
