@@ -38,7 +38,7 @@ const TableElement = ({ element, handleClick, keyValue }) => (
     <TableCell key={getKey(keyValue, 3)}>
       {DateTime.fromISO(element.get('year')).year}
     </TableCell>
-    <TableCell key={getKey(keyValue, 4)}>{element.get('score')}</TableCell>
+    <TableCell key={getKey(keyValue, 4)}>{Math.round((element.get('score') + Number.EPSILON) * 100) / 100}</TableCell>
   </TableRow>
 )
 

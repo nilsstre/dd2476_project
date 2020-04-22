@@ -21,8 +21,8 @@ export const search = (values) => (dispatch) => {
   return axios
     .post(`${URL}/api/elastic/search`, {
       agencies: selectAgency,
-      organization_numbers: selectOrganisationNumber,
-      textField: selectTextField,
+      organisationNumbers: selectOrganisationNumber,
+      textField: selectTextField ? selectTextField : 'both',
       textQuery: searchField,
       years: selectYear
     })

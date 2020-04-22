@@ -42,7 +42,7 @@ const TextItem = ({ text, title }) => (
   </Grid>
 )
 
-const highlightPattern = ({ text, pattern = '' }) => {
+const highlightPattern = ({ text = '', pattern = '' }) => {
   const splitText = text.split(pattern)
 
   if (splitText.length <= 1) {
@@ -83,17 +83,17 @@ const ResultModal = ({ open, handleClose, element, textQuery }) => {
         <Grid container justify='center' style={{ flexWrap: 'nowrap' }}>
           <TextItem
             text={highlightPattern({
-              text: element.get('goal'),
+              text: element.get('goalsAndReporting'),
               pattern: textQuery
             })}
-            title={'Mål'}
+            title={'Goals and reporting'}
           />
           <TextItem
             text={highlightPattern({
-              text: element.get('result'),
+              text: element.get('objective'),
               pattern: textQuery
             })}
-            title={'Result'}
+            title={'Objective'}
           />
         </Grid>
       </DialogContent>

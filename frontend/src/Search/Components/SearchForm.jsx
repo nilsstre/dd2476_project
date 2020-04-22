@@ -59,7 +59,6 @@ const renderSelectField = ({ input, label, ...custom }) => (
     style={{ margin: '0 0.5em 0 0.5em', display: 'flex', flexBasis: 400 }}
     variant='outlined'
     label={label}
-    defaultValue='both'
     {...input}
     {...custom}
     select
