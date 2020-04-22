@@ -18,6 +18,8 @@ export default (state = Map(), action) => {
       }))
     case actions.SETUP_FAILURE:
       return state.set('setupFailed', true)
+    case actions.UPDATE_QUERY_SETTINGS:
+      return state.set('querySettings', fromJS(action.result))
     case actions.SETUP_LOADING:
     default:
       return state

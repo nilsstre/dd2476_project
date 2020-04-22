@@ -32,3 +32,5 @@ export const formChanged = () => {
 
 export const useGetFieldData = () =>
   useSelector((state) => state.search.get('fieldData') ?? Map())
+
+export const useGetQuerySettings = () => useSelector((state) => state.search.get('querySettings'))

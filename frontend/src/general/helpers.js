@@ -25,22 +25,16 @@ export const getPathToPDF = (element) =>
 
 export const sortElements = ({ firstElement, secondElement, filterType }) => {
   if (filterType === 'Agency') {
-    return firstElement
-      .get('agency')
-      .localeCompare(secondElement.get('agency'))
+    return firstElement.get('agency').localeCompare(secondElement.get('agency'))
   } else if (filterType === 'Organisation number') {
     return firstElement
       .get('organisationNumber')
       .localeCompare(secondElement.get('organisationNumber'))
   } else if (filterType === 'Year') {
-    return firstElement
-      .get('year')
-      .localeCompare(secondElement.get('year'))
+    return firstElement.get('year').localeCompare(secondElement.get('year'))
   } else if (filterType === 'Score') {
     return secondElement.get('score') - firstElement.get('score')
   } else {
-    return firstElement
-      .get('agency')
-      .localeCompare(secondElement.get('agency'))
+    return firstElement.get('agency').localeCompare(secondElement.get('agency'))
   }
 }

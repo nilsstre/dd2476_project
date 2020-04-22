@@ -1,6 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import SearchForm from './SearchForm.jsx'
-import { getFieldData, pingElastic, search } from '../actions'
+import {
+  getFieldData,
+  pingElastic,
+  search,
+  updateQuerySettings
+} from '../actions'
 import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -11,11 +16,12 @@ import Typography from '@material-ui/core/Typography'
 import { useSnackbar } from 'notistack'
 import {
   useGetLoading,
-  useGetLoadingFieldData,
+  useGetLoadingFieldData, useGetQuerySettings,
   useGetSetupFailed
 } from '../../hooks'
 import { SNACKBAR_TYPES, snackbarHandler } from '../../general/snackbarHandler'
 import * as actions from '../actions'
+import SettingsModal from './SettingsModal.jsx'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -47,9 +53,12 @@ const SearchPage = () => {
 
   const dispatch = useDispatch()
 
+  const [state, setState] = useState({ settingsOpen: false })
+
   const loading = useGetLoading()
   const loadingFieldData = useGetLoadingFieldData()
   const setupFailed = useGetSetupFailed()
+  const querySettings = useGetQuerySettings()
 
   useEffect(() => {
     dispatch(getFieldData()).then((result) =>
@@ -77,6 +86,9 @@ const SearchPage = () => {
     return () => clearInterval(interval)
   }, [])
 
+  const handleOpen = () => setState({ ...state, settingsOpen: true })
+  const handleClose = () => setState({ ...state, settingsOpen: false })
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -87,8 +99,19 @@ const SearchPage = () => {
           active={loadingFieldData}
           spinner={<BounceLoader active={loadingFieldData} />}
         >
-          <SearchForm onSubmit={(result) => dispatch(search(result))} />
+          <SearchForm
+            onSubmit={(result) => dispatch(search({ result, querySettings }))}
+            settingsOpen={handleOpen}
+          />
           <SearchTable loading={loading} />
+          <SettingsModal
+            open={state.settingsOpen}
+            handleClose={handleClose}
+            onSubmit={(result) => {
+              dispatch(updateQuerySettings(result))
+              handleClose()
+            }}
+          />
         </LoadingOverlay>
       </Paper>
     </div>

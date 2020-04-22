@@ -7,24 +7,25 @@ export const SEARCH_LOADING = 'SEARCH_LOADING'
 export const SEARCH_FAILURE = 'SEARCH_FAILURE'
 export const SEARCH_SUCCESS = 'SEARCH_SUCCESS'
 
-export const FORM_CHANGED = 'FORM_CHANGED'
-
-export const search = (values) => (dispatch) => {
+export const search = ({ result, querySettings }) => (dispatch) => {
   const {
     selectAgency,
-    searchField,
     selectOrganisationNumber,
-    selectTextField,
-    selectYear
-  } = values
+    selectYear,
+    searchTextGoalsAndReporting,
+    searchTextObjectives
+  } = result
   dispatch({ type: SEARCH_LOADING })
   return axios
     .post(`${URL}/api/elastic/search`, {
-      agencies: selectAgency,
-      organisationNumbers: selectOrganisationNumber,
-      textField: selectTextField ? selectTextField : 'both',
-      textQuery: searchField,
-      years: selectYear
+      query: {
+        agencies: selectAgency,
+        organisationNumbers: selectOrganisationNumber,
+        goalsAndReporting: searchTextGoalsAndReporting,
+        objectives: searchTextObjectives,
+        years: selectYear
+      },
+      querySettings
     })
     .then((response) =>
       dispatch({ type: SEARCH_SUCCESS, result: response.data })
@@ -60,3 +61,8 @@ export const pingElastic = () =>
       console.error(error)
       return false
     })
+
+export const UPDATE_QUERY_SETTINGS = 'UPDATE_QUERY_SETTINGS'
+
+export const updateQuerySettings = (settings) => (dispatch) =>
+  dispatch({ type: UPDATE_QUERY_SETTINGS, result: settings })

@@ -1,45 +1,107 @@
 const { DateTime } = require('luxon')
 const R = require('ramda')
 
-const getQuery = (query) => {
-  const { textQuery, textField, agencies, organisationNumbers, years } = query
+const getFieldQuery = ({ field, queryType = 'match', query, boost = 1.0 }) => ({
+  [queryType]: {
+    [field]: {
+      query,
+      boost
+    }
+  }
+})
+
+const getSearchObject = (request) => {
+  const {
+    querySettings: { resultSize }
+  } = request
+
+  return {
+    index: ['regleringsbrev'],
+    body: {
+      query: {
+        bool: {
+          should: getQuery(request)
+        }
+      }
+    },
+    size: resultSize ? resultSize : 10
+  }
+}
+const getQuery = (request) => {
+  const {
+    query: {
+      goalsAndReporting,
+      objectives,
+      agencies,
+      organisationNumbers,
+      years
+    },
+    querySettings: {
+      fullTextQueryGoalsAndReporting,
+      fullTextObjectives,
+      boostGoalsAndReporting,
+      boostObjectives,
+      boostAgencies,
+      boostOrganisationNumbers,
+      boostYears
+    }
+  } = request
+
+  console.log(request.querySettings)
   let newQuery = []
 
-  if (
-    textQuery &&
-    (textField === 'goals_and_reporting' || textField === 'both')
-  ) {
-    newQuery = [...newQuery, { match: { goals_and_reporting: textQuery } }]
+  if (goalsAndReporting) {
+    newQuery = [
+      ...newQuery,
+      getFieldQuery({
+        field: 'goals_and_reporting',
+        boost: boostGoalsAndReporting,
+        query: goalsAndReporting,
+        queryType: fullTextQueryGoalsAndReporting
+      })
+    ]
   }
 
-  if (textQuery && (textField === 'objective' || textField === 'both')) {
-    newQuery = [...newQuery, { match: { objective: textQuery } }]
+  if (objectives) {
+    newQuery = [
+      ...newQuery,
+      getFieldQuery({
+        field: 'objective',
+        boost: boostObjectives,
+        query: objectives,
+        queryType: fullTextObjectives
+      })
+    ]
   }
 
   if (agencies) {
     newQuery = [
       ...newQuery,
-      agencies.map((agency) => ({ match: { agency: agency } }))
+      agencies.map((agency) =>
+        getFieldQuery({ field: 'agency', boost: boostAgencies, query: agency })
+      )
     ]
   }
 
   if (organisationNumbers) {
     newQuery = [
       ...newQuery,
-      organisationNumbers.map((organisationNumber) => ({
-        match: { organization_number: organisationNumber }
-      }))
+      organisationNumbers.map((organisationNumber) =>
+        getFieldQuery({
+          field: 'organization_number',
+          boost: boostOrganisationNumbers,
+          query: organisationNumber
+        })
+      )
     ]
   }
 
   if (years) {
     newQuery = [
       ...newQuery,
-      years.map((year) => ({
-        match: {
-          year: DateTime.fromObject({ year }).toISO()
-        }
-      }))
+      years.map((year) =>
+        getFieldQuery({ field: 'year', boost: boostYears, query: year })
+      )
     ]
   }
 
@@ -64,17 +126,7 @@ const transformResult = (result) =>
 
 const makeQuery = ({ query, client }) =>
   client
-    .search({
-      index: ['regleringsbrev'],
-      body: {
-        query: {
-          bool: {
-            should: getQuery(query)
-          }
-        }
-      },
-      size: 20
-    })
+    .search(getSearchObject(query))
     .then((result) => transformResult(result))
     .catch((error) => error)
 
