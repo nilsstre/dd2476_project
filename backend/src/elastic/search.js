@@ -46,7 +46,6 @@ const getQuery = (request) => {
     }
   } = request
 
-  console.log(request.querySettings)
   let newQuery = []
 
   if (goalsAndReporting) {

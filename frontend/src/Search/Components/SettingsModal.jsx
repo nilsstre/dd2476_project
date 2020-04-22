@@ -44,7 +44,7 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
           <Typography variant='h6' component='h6'>
             Boost search fields
           </Typography>
-          <div style={{ display: 'flex', width: '100%', bottom: '2em' }}>
+          <div style={{ display: 'flex', width: '100%', paddingBottom: '1em' }}>
             <Field
               name='boostGoalsAndReporting'
               component={renderSelectField}
@@ -77,9 +77,9 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
             />
           </div>
           <Typography variant='h6' component='h6'>
-            Full text query
+            Select full text query type
           </Typography>
-          <div style={{ display: 'flex', width: '100%', bottom: '2em' }}>
+          <div style={{ display: 'flex', width: '100%', paddingBottom: '1em' }}>
             <Field
               name='fullTextQueryGoalsAndReporting'
               component={renderSelectField}
@@ -96,7 +96,7 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
           <Typography variant='h6' component='h6'>
             Set maximum number of search result
           </Typography>
-          <div style={{ display: 'flex', width: '100%', bottom: '2em' }}>
+          <div style={{ display: 'flex', width: '100%', paddingBottom: '1em' }}>
             <Field
               name='resultSize'
               component={renderSelectField}

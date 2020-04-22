@@ -25,7 +25,7 @@ export const search = ({ result, querySettings }) => (dispatch) => {
         objectives: searchTextObjectives,
         years: selectYear
       },
-      querySettings
+      querySettings: querySettings ?? {}
     })
     .then((response) =>
       dispatch({ type: SEARCH_SUCCESS, result: response.data })
