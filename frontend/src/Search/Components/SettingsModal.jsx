@@ -107,7 +107,8 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
           <div
             style={{
               display: 'flex',
-              paddingTop: '10px'
+              paddingTop: '10px',
+              paddingBottom: '1em'
             }}
           >
             <Button
