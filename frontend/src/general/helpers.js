@@ -37,7 +37,7 @@ export const sortElements = ({ firstElement, secondElement, filterType }) => {
       .get('year')
       .localeCompare(secondElement.get('year'))
   } else if (filterType === 'Score') {
-    return firstElement.get('score') - secondElement.get('score')
+    return secondElement.get('score') - firstElement.get('score')
   } else {
     return firstElement
       .get('agency')
