@@ -7,11 +7,11 @@
 Run `npm ci` in the backend folder.
 
 ## Run locally
-Run `npm run local` in the backend folder.
+Run `npm run hot-local` in the backend folder.
 
 The server should start on port 8080
 
 # Run the files in the scripts folder
-Run `npm run local src/parser/sripts/<script.js>` 
+Run `npm local-script src/parser/sripts/<script.js>` 
 
 You may also need to change the value of the `PATH_TO_DATA` key in `.env-<local/prod>` file.
