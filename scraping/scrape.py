@@ -60,8 +60,8 @@ def main(args):
     for (agency_name, agency_id, url, content) in app_dirs_data:
         app_dir_data = scrape_app_dir(content)
         app_dir_data['agency'] = agency_name
-        app_dir_data['agency_id'] = agency_id
-        app_dir_data['year'] = args.year
+        app_dir_data['agency_id'] = int(agency_id)
+        app_dir_data['year'] = int(args.year)
         app_dir_data['source_url'] = url
         app_dir_data['organization_number'] = AGENCY_ORG_NUMBER.get(agency_name.upper(), "")
 
