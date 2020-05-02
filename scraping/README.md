@@ -1,6 +1,7 @@
-# Scraping
+# Scraping and indexing
 This folder contains scripts related to scraping appropriation directions
-(regleringsbrev) from [https://www.esv.se/statsliggaren/](Statsliggaren).
+(regleringsbrev) from [https://www.esv.se/statsliggaren/](Statsliggaren) as
+well as indexing them in ElasticSearch.
 
 ## Requirements
 You should have the following installed:
@@ -22,7 +23,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Usage
+## Scraping usage
 1. Start scraping for the year 2020 with:
 ```
 python3 scrape.py --cache ./cache --output ./output --logging --year 2020
@@ -52,3 +53,116 @@ python3 scrape.py --cache ./cache --output ./output --logging --year 2020
    **Note:** Don't worry that the contents of the sections are in HTML. This
    will be easily removed with the `html_filter` in `elasticsearch` when
    filtering.
+
+## Indexing usage
+Now, to upload and index the contents in ElasticSearch simply run:
+```
+python3 index.py --dir ./output --logging
+```
+
+## Indexing script steps:
+### Index
+The index for the appropriation-directions is created in ElasticSearch as
+follows:
+
+```
+PUT /appropriation-directions
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "appropriation-direction-analyser": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "goals_and_reporting": {
+        "type": "text"
+      },
+      "objective": {
+        "type": "text"
+      },
+      "agency": {
+        "type": "keyword"
+      },
+      "agency_id": {
+        "type": "integer"
+      },
+      "year": {
+        "type": "integer"
+      },
+      "source_url": {
+        "type": "text"
+      },
+      "organization_number": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+```
+
+### Ingest pipeline
+The ingest pipeline for stripping the HTML and trimming the resulting content: 
+
+```
+PUT /_ingest/pipeline/appropriation-directions
+{
+  "description" : "Pipeline for ingesting HTML formatted appropriation directions.",
+  "processors" : [
+    {
+      "html_strip" : {
+        "field": "goals_and_reporting"
+      }
+    },
+    {
+      "trim": {
+        "field": "goals_and_reporting"
+      }
+    },
+    {
+      "gsub": {
+        "field": "goals_and_reporting",
+        "pattern": "\\n{2,}",
+        "replacement": "\n\n"
+      }
+    },
+    {
+      "html_strip" : {
+        "field": "objective"
+      }
+    },
+    {
+      "trim": {
+        "field": "objective"
+      }
+    },
+    {
+      "gsub": {
+        "field": "objective",
+        "pattern": "\\n{2,}",
+        "replacement": "\n\n"
+      }
+    }
+  ]
+}
+```
+
+### Indexing a document
+In order to index a document using the provided index definition and pipeline,
+simply run:
+
+```
+POST /appropriation-directions/_doc?pipeline=appropriation-directions 
+{
+    <JSON-contents>
+}
+```
