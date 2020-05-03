@@ -60,6 +60,33 @@ Now, to upload and index the contents in ElasticSearch simply run:
 python3 index.py --dir ./output --logging
 ```
 
+## Searching
+Run the below query in Kibana and you should see the results. Adjust query and
+filters as needed.
+
+```
+GET /appropriation-directions/_search/?pretty=true
+{
+  "query": {
+    "bool": {
+      "must": {
+        "multi_match" : {
+          "query" : "Mål och återrapporteringskrav",
+          "type" : "phrase",
+          "fields" : [ "goals_and_reporting", "objective" ]
+        }
+      },
+      "filter": [
+        { "term": { "agency": "Lantmäteriet" }},
+        { "term": { "year": "2020" }},
+        { "term": { "agency_id": "188" }},
+        { "term": { "organization_number" : "202100-4888" }}
+      ]
+    }
+  }
+}
+```
+
 ## Indexing script steps:
 ### Index
 The index for the appropriation-directions is created in ElasticSearch as
@@ -71,13 +98,24 @@ PUT /appropriation-directions
   "settings": {
     "analysis": {
       "analyzer": {
-        "appropriation-direction-analyser": {
-          "type": "custom",
+        "swedish_normal": {
           "tokenizer": "standard",
           "filter": [
             "lowercase",
-            "asciifolding"
           ]
+        },
+        "swedish_stemmer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "swedish_stemmer"
+          ]
+        }
+      },
+      "filter": {
+        "swedish_stemmer": {
+          "type": "stemmer",
+          "language": "light_swedish"
         }
       }
     }
@@ -85,10 +123,24 @@ PUT /appropriation-directions
   "mappings": {
     "properties": {
       "goals_and_reporting": {
-        "type": "text"
+        "type": "text",
+        "analyzer": "swedish_normal",
+        "fields": {
+          "stemmed": {
+            "type": "text",
+            "analyzer": "swedish_stemmer"
+          }
+        }
       },
       "objective": {
-        "type": "text"
+        "type": "text",
+        "analyzer": "swedish_normal",
+        "fields": {
+          "stemmed": {
+            "type": "text",
+            "analyzer": "swedish_stemmer"
+          }
+        }
       },
       "agency": {
         "type": "keyword"
@@ -111,7 +163,7 @@ PUT /appropriation-directions
 ```
 
 ### Ingest pipeline
-The ingest pipeline for stripping the HTML and trimming the resulting content: 
+The ingest pipeline for stripping the HTML and trimming the resulting content:
 
 ```
 PUT /_ingest/pipeline/appropriation-directions
@@ -161,7 +213,7 @@ In order to index a document using the provided index definition and pipeline,
 simply run:
 
 ```
-POST /appropriation-directions/_doc?pipeline=appropriation-directions 
+POST /appropriation-directions/_doc?pipeline=appropriation-directions
 {
     <JSON-contents>
 }

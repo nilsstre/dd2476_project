@@ -14,13 +14,24 @@ def create_index(server):
           "settings": {
             "analysis": {
               "analyzer": {
-                "appropriation-direction-analyser": {
-                  "type": "custom",
+                "swedish_normal": {
                   "tokenizer": "standard",
                   "filter": [
                     "lowercase",
-                    "asciifolding"
                   ]
+                },
+                "swedish_stemmer": {
+                  "tokenizer": "standard",
+                  "filter": [
+                    "lowercase",
+                    "swedish_stemmer"
+                  ]
+                }
+              },
+              "filter": {
+                "swedish_stemmer": {
+                  "type": "stemmer",
+                  "language": "light_swedish"
                 }
               }
             }
@@ -28,10 +39,24 @@ def create_index(server):
           "mappings": {
             "properties": {
               "goals_and_reporting": {
-                "type": "text"
+                "type": "text",
+                "analyzer": "swedish_normal",
+                "fields": {
+                  "stemmed": {
+                    "type": "text",
+                    "analyzer": "swedish_stemmer"
+                  }
+                }
               },
               "objective": {
-                "type": "text"
+                "type": "text",
+                "analyzer": "swedish_normal",
+                "fields": {
+                  "stemmed": {
+                    "type": "text",
+                    "analyzer": "swedish_stemmer"
+                  }
+                }
               },
               "agency": {
                 "type": "keyword"
