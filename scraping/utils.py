@@ -43,7 +43,7 @@ def scrape_app_dir(app_dir_html):
 
     def get_sanitized_parent(comment):
         comment_elem = soup.find_all(string=lambda s: isinstance(s, Comment) and comment in s)[0]
-        return unicodedata.normalize("NFKD", str(comment_elem.parent))
+        return unicodedata.normalize("NFKC", str(comment_elem.parent))
 
     data['goals_and_reporting'] = get_sanitized_parent("BEGIN output av maalAaterrapportering")
     data['objective'] = get_sanitized_parent("BEGIN output av uppdrag")
