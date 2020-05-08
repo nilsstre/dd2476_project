@@ -12,8 +12,7 @@ export const search = ({ result, querySettings }) => (dispatch) => {
     selectAgency,
     selectOrganisationNumber,
     selectYear,
-    searchTextGoalsAndReporting,
-    searchTextObjectives
+    textQuery
   } = result
   dispatch({ type: SEARCH_LOADING })
   return axios
@@ -21,8 +20,7 @@ export const search = ({ result, querySettings }) => (dispatch) => {
       query: {
         agencies: selectAgency,
         organisationNumbers: selectOrganisationNumber,
-        goalsAndReporting: searchTextGoalsAndReporting,
-        objectives: searchTextObjectives,
+        textQuery,
         years: selectYear
       },
       querySettings: querySettings ?? {}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import Grid from '@material-ui/core/Grid'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button'
 import DateTime from 'luxon/src/datetime'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import { makeStyles } from '@material-ui/core/styles'
+import { Document, Page } from 'react-pdf/dist/entry.webpack'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +63,12 @@ const highlightPattern = ({ text = '', pattern = '' }) => {
 
 const ResultModal = ({ open, handleClose, element, textQuery }) => {
   const classes = useStyles()
+  const [state, setState] = useState({
+    numPages: null,
+    pageNumber: 1
+  })
+
+  const onLoadSuccess = ({ numPages }) => setState({ ...state, numPages })
 
   return element ? (
     <Dialog
@@ -80,22 +87,19 @@ const ResultModal = ({ open, handleClose, element, textQuery }) => {
         </ul>
       </Paper>
       <DialogContent dividers={true}>
-        <Grid container justify='center' style={{ flexWrap: 'nowrap' }}>
-          <TextItem
-            text={highlightPattern({
-              text: element.get('goalsAndReporting'),
-              pattern: textQuery
-            })}
-            title={'Goals and reporting'}
-          />
-          <TextItem
-            text={highlightPattern({
-              text: element.get('objective'),
-              pattern: textQuery
-            })}
-            title={'Objective'}
-          />
-        </Grid>
+        <Document
+          file={
+            'https://dd2476-project.s3.eu-north-1.amazonaws.com/arsredovisningar/2007_Fastighetsma%CC%88klarinspektionen_2021004870.pdf'
+          }
+          onLoadSuccess={onLoadSuccess}
+        >
+          {Array.from(new Array(state.numPages), (el, index) => (
+            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+          ))}
+        </Document>
+        <p>
+          Page {state.pageNumber} of {state.numPages}
+        </p>
       </DialogContent>
       <div className={classes.root}>
         <ButtonGroup>

@@ -33,10 +33,10 @@ export const renderAutoComplete = ({
 
 export const renderTextField = ({ input, label, hintText, meta, ...rest }) => (
   <TextField
-    style={{ margin: '0 0.5em 0 0.5em', display: 'flex', flexBasis: 600 }}
     label={label}
     {...input}
     {...rest}
+    style={{ margin: '0 0.5em 0 0.5em', display: 'flex', flexBasis: 600 }}
   />
 )
 

@@ -1,5 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { fromJS, List, Map } from 'immutable'
+import { useSelector } from 'react-redux'
+import { List, Map } from 'immutable'
+
 export const useGetLoading = () =>
   useSelector((state) => state.search.get('loading'))
 
@@ -20,17 +21,11 @@ export const useGetTextQuery = () =>
     (state) =>
       state.form.searchForm &&
       state.form.searchForm.values &&
-      state.form.searchForm.values.searchField
+      state.form.searchForm.values.textQuery
   )
-
-export const formChanged = () => {
-  const previous = useSelector((state) => state.search.get('previousQuery'))
-  const newQuery = fromJS(useSelector((state) => state.searchForm))
-
-  return !previous.equals(newQuery)
-}
 
 export const useGetFieldData = () =>
   useSelector((state) => state.search.get('fieldData') ?? Map())
 
-export const useGetQuerySettings = () => useSelector((state) => state.search.get('querySettings'))
+export const useGetQuerySettings = () =>
+  useSelector((state) => state.search.get('querySettings'))

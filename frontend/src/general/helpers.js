@@ -22,19 +22,3 @@ export const getYears = (years) =>
 
 export const getPathToPDF = (element) =>
   element && `${S3_ADDRESS}${element.get('index')}/${element.get('id')}`
-
-export const sortElements = ({ firstElement, secondElement, filterType }) => {
-  if (filterType === 'Agency') {
-    return firstElement.get('agency').localeCompare(secondElement.get('agency'))
-  } else if (filterType === 'Organisation number') {
-    return firstElement
-      .get('organisationNumber')
-      .localeCompare(secondElement.get('organisationNumber'))
-  } else if (filterType === 'Year') {
-    return firstElement.get('year').localeCompare(secondElement.get('year'))
-  } else if (filterType === 'Score') {
-    return secondElement.get('score') - firstElement.get('score')
-  } else {
-    return firstElement.get('agency').localeCompare(secondElement.get('agency'))
-  }
-}

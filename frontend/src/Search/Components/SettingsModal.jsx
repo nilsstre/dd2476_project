@@ -17,16 +17,6 @@ const boostOptions = ({ size, startAt = 0 }) => [
     .map((key) => ({ name: key, value: key }))
 ]
 
-const fullTextQueryOptions = [
-  { name: 'Match (default)', value: 'match' },
-  { name: 'Match bool prefix', value: 'match_bool_prefix' },
-  { name: 'Match phrase', value: 'match_phrase' },
-  { name: 'Match phrase prefix', value: 'match_phrase_prefix' },
-  { name: 'Common terms', value: 'common' },
-  { name: 'Query string', value: 'query_string' },
-  { name: 'Simple query string', value: 'simple_query_string' }
-]
-
 const resultSize = [10, 20, 50, 100, 150, 200].map((key) => ({
   name: key,
   value: key
@@ -37,7 +27,7 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
     <Dialog open={open} onClose={handleClose} maxWidth='xl' fullWidth={true}>
       <DialogTitle>Search preferences</DialogTitle>
       <DialogContent>
-        <DialogContentText >
+        <DialogContentText>
           Changes will take effect on next search
         </DialogContentText>
         <form onSubmit={handleSubmit}>
@@ -56,41 +46,6 @@ const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
               component={renderSelectField}
               menuItems={boostOptions({ size: 5, startAt: 2 })}
               label='Boost objectives'
-            />
-            <Field
-              name='boostAgencies'
-              component={renderSelectField}
-              menuItems={boostOptions({ size: 5, startAt: 2 })}
-              label='Boost agencies'
-            />
-            <Field
-              name='boostOrganisationNumbers'
-              component={renderSelectField}
-              menuItems={boostOptions({ size: 5, startAt: 2 })}
-              label='Boost organisation numbers'
-            />
-            <Field
-              name='boostYears'
-              component={renderSelectField}
-              menuItems={boostOptions({ size: 5, startAt: 2 })}
-              label='Boost years'
-            />
-          </div>
-          <Typography variant='h6' component='h6'>
-            Select full text query type
-          </Typography>
-          <div style={{ display: 'flex', width: '100%', paddingBottom: '1em' }}>
-            <Field
-              name='fullTextQueryGoalsAndReporting'
-              component={renderSelectField}
-              menuItems={fullTextQueryOptions}
-              label='Search and reporting'
-            />
-            <Field
-              name='fullTextObjectives'
-              component={renderSelectField}
-              menuItems={fullTextQueryOptions}
-              label='Objectives'
             />
           </div>
           <Typography variant='h6' component='h6'>

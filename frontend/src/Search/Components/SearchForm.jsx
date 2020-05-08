@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import Button from '@material-ui/core/Button'
 import SearchIcon from '@material-ui/icons/Search'
@@ -7,7 +7,7 @@ import {
   getOrganisationNumbers,
   getYears
 } from '../../general/helpers'
-import { useGetFieldData } from '../../hooks'
+import { useGetFieldData, useGetTextQuery } from '../../hooks'
 import SettingsIcon from '@material-ui/icons/Settings'
 import {
   renderAutoComplete,
@@ -16,8 +16,9 @@ import {
 
 export const FORM_NAME = 'searchForm'
 
-const SearchForm = ({ handleSubmit, submitting, settingsOpen }) => {
+const SearchForm = ({ handleSubmit, submitting, pristine, settingsOpen }) => {
   const fieldData = useGetFieldData()
+  const isTextQuery = !!!useGetTextQuery()
 
   return (
     <form
@@ -25,16 +26,7 @@ const SearchForm = ({ handleSubmit, submitting, settingsOpen }) => {
       onSubmit={handleSubmit}
     >
       <div style={{ display: 'flex', width: '100%', bottom: '2em' }}>
-        <Field
-          name='searchTextGoalsAndReporting'
-          component={renderTextField}
-          label='Search and goal'
-        />
-        <Field
-          name='searchTextObjectives'
-          component={renderTextField}
-          label='Objectives'
-        />
+        <Field name='textQuery' component={renderTextField} label='Search' />
         <Field
           name='selectAgency'
           component={renderAutoComplete}
@@ -59,7 +51,7 @@ const SearchForm = ({ handleSubmit, submitting, settingsOpen }) => {
           placeholder='Years'
           flexBasis={300}
         />
-        <Button type='submit' disabled={submitting}>
+        <Button type='submit' disabled={submitting || pristine || isTextQuery}>
           <SearchIcon />
         </Button>
         <Button onClick={settingsOpen} disabled={submitting}>

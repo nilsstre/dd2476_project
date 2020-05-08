@@ -11,41 +11,116 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import ResultModal from './ResultModal.jsx'
 import { useSnackbar } from 'notistack'
 import { SNACKBAR_TYPES, snackbarHandler } from '../../general/snackbarHandler'
-import { sortElements } from '../../general/helpers'
 import {
   useCountSearchResult,
   useGetResult,
   useGetTextQuery
 } from '../../hooks'
+import TableSortLabel from '@material-ui/core/TableSortLabel'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles((theme) => ({
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
+  }
+}))
 
 const rowDescriptions = [
-  'Agency',
-  'Organisation number',
-  'Year',
-  'Score'
+  { id: 'agency', numeric: false, label: 'Agency' },
+  { id: 'organisationNumber', numeric: false, label: 'Organisation number' },
+  { id: 'year', numeric: true, label: 'Year' },
+  { id: 'score', numeric: true, label: 'Score' }
 ]
+
+const descendingComparator = (a, b, orderBy) => {
+  if (b.get(orderBy) < a.get(orderBy)) {
+    return -1
+  }
+  if (b.get(orderBy) > a.get(orderBy)) {
+    return 1
+  }
+  return 0
+}
+
+const getComparator = (order, orderBy) => {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy)
+}
+
+const stableSort = (array, comparator) => {
+  return array.sort((a, b) => comparator(a, b))
+}
 
 const getKey = (key, number) => `${key}-${number}`
 
 const TableElement = ({ element, handleClick, keyValue }) => (
   <TableRow onClick={() => handleClick(element)} key={getKey(keyValue)}>
-    <TableCell key={getKey(keyValue, 1)}>{element.get('agency')}</TableCell>
-    <TableCell key={getKey(keyValue, 2)}>
+    <TableCell key={getKey(keyValue, 1)} align='left'>{element.get('agency')}</TableCell>
+    <TableCell key={getKey(keyValue, 2)} align='left'>
       {element.get('organisationNumber')
         ? element.get('organisationNumber')
         : 'Missing'}
     </TableCell>
-    <TableCell key={getKey(keyValue, 3)}>
+    <TableCell key={getKey(keyValue, 3)} align='right'>
       {DateTime.fromISO(element.get('year')).year}
     </TableCell>
-    <TableCell key={getKey(keyValue, 4)}>{Math.round((element.get('score') + Number.EPSILON) * 100) / 100}</TableCell>
+    <TableCell key={getKey(keyValue, 4)} align='right'>
+      {Math.round((element.get('score') + Number.EPSILON) * 100) / 100}
+    </TableCell>
   </TableRow>
 )
 
+const EnhancedTableHead = ({ order, orderBy, onRequestSort, classes }) => {
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property)
+  }
+
+  return (
+    <TableHead>
+      <TableRow>
+        {rowDescriptions.map((rowDescription) => (
+          <TableCell
+            key={rowDescription.id}
+            align={rowDescription.numeric ? 'right' : 'left'}
+          >
+            <TableSortLabel
+              key={rowDescription.label}
+              active={orderBy === rowDescription.id}
+              direction={orderBy === rowDescription.id ? order : 'asc'}
+              onClick={createSortHandler(rowDescription.id)}
+            >
+              <b>{rowDescription.label}</b>
+              {orderBy === rowDescription.id ? (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  )
+}
+
 const SearchTable = ({ loading }) => {
-  const [state, setState] = useState({ modalOpen: false, filterType: 'Agency' })
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedElement, setSelectedElement] = useState()
+  const [order, setOrder] = useState('desc')
+  const [orderBy, setOrderBy] = useState('score')
 
   const { enqueueSnackbar } = useSnackbar()
+
+  const classes = useStyles()
 
   const result = useGetResult()
   const textQuery = useGetTextQuery()
@@ -60,54 +135,49 @@ const SearchTable = ({ loading }) => {
       })
   }, [result])
 
-  const handleClick = (element) =>
-    setState({ ...state, modalOpen: true, element })
+  const handleClick = (element) => {
+    setSelectedElement(element)
+    setModalOpen(true)
+  }
 
-  const handleResultModalClose = () => setState({ ...state, modalOpen: false })
+  const handleResultModalClose = () => setModalOpen(false)
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc'
+    setOrder(isAsc ? 'desc' : 'asc')
+    console.log(property)
+    setOrderBy(property)
+  }
 
   return (
     <React.Fragment>
       <LoadingOverlay active={loading} spinner={<ClipLoader loading={true} />}>
         <ResultModal
-          open={state.modalOpen}
+          open={modalOpen}
           handleClose={handleResultModalClose}
-          element={state.element}
+          element={selectedElement}
           textQuery={textQuery}
         />
         <TableContainer>
-          <Table unselectable={'off'}>
-            <TableHead>
-              <TableRow>
-                {rowDescriptions.map((description, index) => (
-                  <TableCell
-                    key={index}
-                    onClick={() =>
-                      setState({ ...state, filterType: description })
-                    }
-                  >
-                    {description}{' '}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+          <Table stickyHeader aria-label='sticky table' unselectable='off'>
+            <EnhancedTableHead
+              onRequestSort={handleRequestSort}
+              order={order}
+              orderBy={orderBy}
+              classes={classes}
+            />
             <TableBody>
               {result
-                ? result
-                    .sort((firstElement, secondElement) =>
-                      sortElements({
-                        firstElement,
-                        secondElement,
-                        filterType: state.filterType
-                      })
-                    )
-                    .map((element, key) => (
+                ? stableSort(result, getComparator(order, orderBy)).map(
+                    (element, index) => (
                       <TableElement
-                        key={key}
-                        keyValue={key}
+                        key={index}
                         element={element}
-                        handleClick={handleClick}
+                        handleClick={() => handleClick(element)}
+                        keyValue={index}
                       />
-                    ))
+                    )
+                  )
                 : null}
             </TableBody>
           </Table>
