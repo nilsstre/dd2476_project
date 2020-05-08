@@ -1,109 +1,72 @@
-const R = require('ramda')
-
-const getFieldQuery = ({ field, queryType = 'match', query, boost = 1.0 }) => ({
-  [queryType]: {
-    [field]: {
-      query,
-      boost
-    }
-  }
-})
-
 const getSearchObject = (request) => {
   const {
     querySettings: { resultSize }
   } = request
 
   return {
-    index: ['regleringsbrev'],
+    index: ['appropriation-directions'],
     body: {
       query: {
         bool: {
-          should: getQuery(request)
+          must: {
+            multi_match: getQuery(request)
+          },
+          filter: getFilters(request)
         }
       }
     },
     size: resultSize ? resultSize : 10
   }
 }
+
 const getQuery = (request) => {
   const {
-    query: {
-      goalsAndReporting,
-      objectives,
-      agencies,
-      organisationNumbers,
-      years
-    },
-    querySettings: {
-      fullTextQueryGoalsAndReporting,
-      fullTextObjectives,
-      boostGoalsAndReporting,
-      boostObjectives,
-      boostAgencies,
-      boostOrganisationNumbers,
-      boostYears
-    }
+    query: { textQuery },
+    querySettings: { queryType, boostGoalsAndReporting, boostObjectives }
   } = request
 
-  let newQuery = []
+  let fields = ['goals_and_reporting', 'objective']
 
-  if (goalsAndReporting) {
-    newQuery = [
-      ...newQuery,
-      getFieldQuery({
-        field: 'goals_and_reporting',
-        boost: boostGoalsAndReporting,
-        query: goalsAndReporting,
-        queryType: fullTextQueryGoalsAndReporting
-      })
+  if (boostGoalsAndReporting) {
+    fields = [fields[0] + `^${boostGoalsAndReporting}`, fields[1]]
+  }
+
+  if (boostObjectives) {
+    fields = [fields[0], fields[1] + `^${boostObjectives}`]
+  }
+
+  return {
+    query: textQuery,
+    type: queryType || 'phrase',
+    fields
+  }
+}
+
+const getFilters = (request) => {
+  const {
+    query: { agencies, organisationNumbers, years }
+  } = request
+
+  let filters = []
+
+  if (agencies && agencies.length > 0) {
+    filters = [...filters, { terms: { agency: agencies } }]
+  }
+
+  if (organisationNumbers && organisationNumbers.length > 0) {
+    filters = [
+      ...filters,
+      {
+        terms: { organization_number: organisationNumbers }
+      }
     ]
   }
 
-  if (objectives) {
-    newQuery = [
-      ...newQuery,
-      getFieldQuery({
-        field: 'objective',
-        boost: boostObjectives,
-        query: objectives,
-        queryType: fullTextObjectives
-      })
-    ]
+  if (years && years.length > 0) {
+    filters = [...filters, { terms: { year: years } }]
   }
 
-  if (agencies) {
-    newQuery = [
-      ...newQuery,
-      agencies.map((agency) =>
-        getFieldQuery({ field: 'agency', boost: boostAgencies, query: agency })
-      )
-    ]
-  }
-
-  if (organisationNumbers) {
-    newQuery = [
-      ...newQuery,
-      organisationNumbers.map((organisationNumber) =>
-        getFieldQuery({
-          field: 'organization_number',
-          boost: boostOrganisationNumbers,
-          query: organisationNumber
-        })
-      )
-    ]
-  }
-
-  if (years) {
-    newQuery = [
-      ...newQuery,
-      years.map((year) =>
-        getFieldQuery({ field: 'year', boost: boostYears, query: year })
-      )
-    ]
-  }
-
-  return R.flatten(newQuery)
+  return filters
 }
 
 const transformResult = (result) =>
