@@ -145,7 +145,6 @@ const SearchTable = ({ loading }) => {
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
-    console.log(property)
     setOrderBy(property)
   }
 
