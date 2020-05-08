@@ -32,7 +32,7 @@ module.exports = (env) => {
     },
     output: {
       path: path.resolve(__dirname, 'build'),
-      filename: isDevelopment ? 'main.js' : '[contenthash:8].main.js'
+      filename: isDevelopment ? 'main.js' : '[contenthash].main.js'
     },
     plugins: [
       new HtmlWebpackPlugin({
