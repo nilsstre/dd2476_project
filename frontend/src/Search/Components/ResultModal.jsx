@@ -60,13 +60,33 @@ const highlightPattern = ({ text = '', pattern = '' }) => {
   )
 }
 
-const PDFView = ({ element, onLoadSuccess, state}) => (<div>
+const PDFhighlightPattern = (text, pattern) => {
+  const splitText = text.split(pattern);
+
+  if (splitText.length <= 1) {
+    return text;
+  }
+
+  const matches = text.match(pattern);
+
+  return splitText.reduce((arr, element, index) => (matches[index] ? [
+    ...arr,
+    element,
+    <mark>
+      {matches[index]}
+    </mark>,
+  ] : [...arr, element]), []);
+}
+
+const makeTextRenderer = (searchText) => (textItem) => PDFhighlightPattern(textItem.str, searchText)
+
+const PDFView = ({ element, onLoadSuccess, state, searchText }) => (<div>
   <Document
     file={getPathToPDF(element.get('year') + '_' + element.get('agency') + '_' + element.get('organisationNumber').replace('-', '') + '.pdf')}
     onLoadSuccess={onLoadSuccess}
   >
     {Array.from(new Array(state.numPages), (el, index) => (
-      <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+      <Page key={`page_${index + 1}`} pageNumber={index + 1} customTextRenderer={makeTextRenderer(searchText)}/>
     ))}
   </Document>
   <p>
@@ -114,7 +134,7 @@ const ResultModal = ({ open, handleClose, element, textQuery }) => {
             })}
             title={'Objective'}/>
           </div>
-          <PDFView element={element} onLoadSuccess={onLoadSuccess} state={state} />
+          <PDFView element={element} onLoadSuccess={onLoadSuccess} state={state} searchText={textQuery} />
         </Grid>
       </DialogContent>
     </Dialog>
