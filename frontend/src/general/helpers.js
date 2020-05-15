@@ -20,5 +20,4 @@ export const getYears = (years) =>
     .sort()
     .toJS()
 
-export const getPathToPDF = (element) =>
-  element && `${S3_ADDRESS}${element.get('index')}/${element.get('id')}`
+export const getPathToPDF = (fileName) => `${S3_ADDRESS}arsredovisningar/${encodeURI(fileName)}`

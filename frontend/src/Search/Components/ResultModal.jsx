@@ -6,11 +6,10 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import Paper from '@material-ui/core/Paper'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
 import DateTime from 'luxon/src/datetime'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
 import { makeStyles } from '@material-ui/core/styles'
 import { Document, Page } from 'react-pdf/dist/entry.webpack'
+import { getPathToPDF } from '../../general/helpers'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TextItem = ({ text, title }) => (
-  <Grid item style={{ width: '50%', padding: '4px' }}>
+  <Grid item >
     <Paper style={{ padding: '2px' }}>
       <Typography component='h1' variant='h4'>
         {title}
@@ -61,8 +60,21 @@ const highlightPattern = ({ text = '', pattern = '' }) => {
   )
 }
 
+const PDFView = ({ element, onLoadSuccess, state}) => (<div>
+  <Document
+    file={getPathToPDF(element.get('year') + '_' + element.get('agency') + '_' + element.get('organisationNumber').replace('-', '') + '.pdf')}
+    onLoadSuccess={onLoadSuccess}
+  >
+    {Array.from(new Array(state.numPages), (el, index) => (
+      <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+    ))}
+  </Document>
+  <p>
+    Page {state.pageNumber} of {state.numPages}
+  </p>
+</div>)
+
 const ResultModal = ({ open, handleClose, element, textQuery }) => {
-  const classes = useStyles()
   const [state, setState] = useState({
     numPages: null,
     pageNumber: 1
@@ -85,29 +97,26 @@ const ResultModal = ({ open, handleClose, element, textQuery }) => {
           <li>{`Organisation number: ${element.get('organisationNumber')}`}</li>
           <li>{`Year: ${DateTime.fromISO(element.get('year')).year}`}</li>
         </ul>
-      </Paper>
+¨      </Paper>
       <DialogContent dividers={true}>
-        <Document
-          file={
-            'https://dd2476-project.s3.eu-north-1.amazonaws.com/arsredovisningar/2007_Fastighetsma%CC%88klarinspektionen_2021004870.pdf'
-          }
-          onLoadSuccess={onLoadSuccess}
-        >
-          {Array.from(new Array(state.numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-          ))}
-        </Document>
-        <p>
-          Page {state.pageNumber} of {state.numPages}
-        </p>
+        <Grid container justify='center' direction="row" style={{ flexWrap: 'nowrap' }}>
+          <div style={{ width: '30%', alignItems: 'left' }}>
+            <TextItem
+              text={highlightPattern({
+                text: element.get('goalsAndReporting'),
+                pattern: textQuery
+              })}
+              title={'Goals and reporting'}
+            />
+            <TextItem text={highlightPattern({
+              text: element.get('objective'),
+              pattern: textQuery
+            })}
+            title={'Objective'}/>
+          </div>
+          <PDFView element={element} onLoadSuccess={onLoadSuccess} state={state} />
+        </Grid>
       </DialogContent>
-      <div className={classes.root}>
-        <ButtonGroup>
-          <Button>Download regleringsbrev</Button>
-          <Button>Download regleringsbrev & årsredovsning</Button>
-          <Button>Download årsredovsning</Button>
-        </ButtonGroup>
-      </div>
     </Dialog>
   ) : null
 }

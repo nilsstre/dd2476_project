@@ -24,7 +24,7 @@ const resultSize = [10, 20, 50, 100, 150, 200].map((key) => ({
 
 const SettingsModal = ({ open, handleClose, handleSubmit, submitting }) => {
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth='xl' fullWidth={true}>
+    <Dialog open={open} onClose={handleClose} maxWidth='xl' fullWidth={true} >
       <DialogTitle>Search preferences</DialogTitle>
       <DialogContent>
         <DialogContentText>
