@@ -3,6 +3,8 @@
 
 ## Swedish Democracy Search Tool
 
+**NOTE:** The PDF documents have been deleted from the S3 bucket, so no documents will be rendered in the result modal.
+
 ### Group members
 * Sven Anderzén
 * Nils Streijffert
